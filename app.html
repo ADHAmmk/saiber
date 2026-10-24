@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHAM GLOBAL CONTROL</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+:root{--g:#00ff66;--g2:#00b348;--bd:#00ff6640;--bg:#010804;--pn:#02120aD9;--bad:#ff3b4e;--warn:#ffc83d}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg);color:var(--g);font-family:'Share Tech Mono','Courier New',monospace;font-size:14px}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:99;background:repeating-linear-gradient(0deg,#0000 0 2px,#00ff6606 2px 3px)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+header{position:fixed;inset:0 0 auto 0;height:58px;display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid var(--bd);background:var(--pn);z-index:10}
+header h1{font-size:19px;letter-spacing:4px;text-shadow:0 0 12px var(--g);flex:1;white-space:nowrap}
+#clock{color:var(--g2)}
+.b{background:none;border:1px solid var(--g);color:var(--g);padding:7px 14px;letter-spacing:2px}
+.b:hover{background:var(--g);color:#001a0a}.b.r{border-color:var(--bad);color:var(--bad)}.b.r:hover{background:var(--bad);color:#200}
+.stage{position:fixed;inset:0}
+canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+aside{position:fixed;top:70px;bottom:52px;width:340px;display:flex;flex-direction:column;gap:12px;z-index:5}
+#L{left:14px}#R{right:14px}
+.p{background:var(--pn);border:1px solid var(--bd);padding:14px;box-shadow:inset 0 0 24px #00ff6610;backdrop-filter:blur(3px)}
+.p h2{font-size:12px;letter-spacing:3px;color:var(--g2);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.sc{overflow:auto;flex:1;min-height:0}
+.site{display:grid;grid-template-columns:12px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid transparent;border-bottom:1px solid #00ff6620;cursor:pointer}
+.site:hover,.site.on{border-color:var(--g);background:#00ff6610}
+.site i{width:10px;height:10px;border-radius:50%;background:var(--g2)}
+.site.up i{background:var(--g);box-shadow:0 0 10px var(--g)}.site.down i{background:var(--bad);box-shadow:0 0 10px var(--bad)}
+.site b{font-weight:400;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.site small{color:var(--g2);font-size:11.5px}
+.site em{font-style:normal;color:var(--g2);font-size:12px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}.kv span{color:var(--g2)}.kv b{font-weight:400;text-align:left;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row .b{padding:6px 10px;font-size:12px}
+svg.sp{width:100%;height:46px;margin-top:10px}
+.log{list-style:none;font-size:12px;display:grid;gap:7px}.log li{color:var(--g2)}.log li.bad{color:var(--bad)}.log li.warn{color:var(--warn)}.log li.ok{color:var(--g)}
+footer{position:fixed;inset:auto 0 0 0;height:40px;display:flex;gap:28px;align-items:center;padding:0 20px;border-top:1px solid var(--bd);background:var(--pn);z-index:10;font-size:13px;overflow:auto;white-space:nowrap}
+footer b{font-weight:400;color:var(--g);text-shadow:0 0 8px var(--g)}footer span{color:var(--g2)}
+.mod{position:fixed;inset:0;background:#000c;display:none;place-items:center;z-index:50;padding:14px}.mod.on{display:grid}
+.box{width:100%;max-width:420px;max-height:92vh;overflow:auto;background:#020f07;border:1px solid var(--g);padding:22px;box-shadow:0 0 40px #00ff6633}
+.box h3{letter-spacing:3px;margin-bottom:14px;font-weight:400}
+.box label{display:block;font-size:12px;color:var(--g2);margin:10px 0 5px}
+.box input{width:100%;background:#000;border:1px solid var(--bd);color:var(--g);padding:10px;font:inherit}
+.box input:focus{border-color:var(--g);outline:none}
+#err{color:var(--bad);min-height:18px;font-size:12px;margin-top:8px}
+.hint{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);color:var(--g2);font-size:11.5px;z-index:4;pointer-events:none}
+@media(max-width:1000px){
+ .stage{position:relative;height:48vh;margin-top:58px}
+ aside{position:static;width:auto;margin:12px}#L,#R{left:auto;right:auto}.sc{overflow:visible}
+ footer{position:static;margin-top:10px}.hint{display:none}header h1{font-size:14px;letter-spacing:2px}#clock{display:none}
+}
+@media(prefers-reduced-motion:reduce){body::after{display:none}}
+.ed{position:fixed;inset:0;background:var(--bg);z-index:60;display:none;flex-direction:column}.ed.on{display:flex}
+.edh{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.edh b{font-weight:400;letter-spacing:2px;text-shadow:0 0 8px var(--g)}.edh input{flex:1;min-width:160px;background:#000;border:1px solid var(--bd);color:var(--g);padding:7px 10px;font:inherit}
+.edb{flex:1;min-height:0;display:grid;grid-template-columns:290px 1fr}
+.edl{border-left:0;border-right:1px solid var(--bd);display:flex;flex-direction:column;min-height:0}
+.edl>input{margin:8px;background:#000;border:1px solid var(--bd);color:var(--g);padding:7px 10px;font:inherit}
+#etree{overflow:auto;flex:1;font-size:12.5px}
+.fi{padding:5px 12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--g2)}.fi:hover{background:#00ff6612;color:var(--g)}.fi.on{background:#00ff6620;color:var(--g)}
+.edm{display:flex;flex-direction:column;min-height:0;min-width:0}
+#epath{padding:8px 14px;color:var(--g2);font-size:12.5px;border-bottom:1px solid var(--bd)}
+#etx{flex:1;width:100%;resize:none;background:#000;color:var(--g);border:0;padding:14px;font:13px/1.55 'Share Tech Mono','Courier New',monospace;tab-size:2;outline:none}
+#estat{padding:8px 14px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--g2);min-height:34px}
+@media(max-width:1000px){.edb{grid-template-columns:1fr;grid-template-rows:30vh 1fr}.edl{border-right:0;border-bottom:1px solid var(--bd)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>ADHAM // GLOBAL CONTROL</h1>
+  <span id="clock"></span>
+  <a class="b" href="/dashboard" style="text-decoration:none">DASHBOARD</a>
+  <button class="b" id="scan">SCAN</button>
+  <button class="b" id="add">+ TARGET</button>
+  <button class="b r" id="out">LOGOUT</button>
+</header>
+<div class="stage"><canvas id="globe" aria-label="Rotating Earth showing monitored sites"></canvas></div>
+
+<aside id="L">
+  <div class="p sc"><h2><span>&gt; TARGETS</span><span id="cnt"></span></h2><div id="list"></div></div>
+</aside>
+<aside id="R">
+  <div class="p" id="det"></div>
+  <div class="p sc"><h2>&gt; EVENT LOG</h2><ul class="log" id="log"></ul></div>
+</aside>
+<div class="hint">DRAG TO ROTATE // CLICK A TARGET TO LOCK ON</div>
+<footer id="foot"></footer>
+
+<div class="ed" id="ed">
+  <div class="edh"><b id="edt">EDITOR</b><input id="emsg" placeholder="commit message (optional)" maxlength="200"><button class="b" id="enew">+ FILE</button><button class="b" id="esave">SAVE &amp; DEPLOY</button><button class="b r" id="edel">DELETE</button><button class="b r" id="eclose">CLOSE</button></div>
+  <div class="edb"><div class="edl"><input id="eq" placeholder="filter files..." autocomplete="off"><div id="etree"></div></div>
+  <div class="edm"><div id="epath"></div><textarea id="etx" spellcheck="false" wrap="off" dir="ltr" aria-label="File editor"></textarea><div id="estat" role="status"></div></div></div>
+</div>
+<div class="mod" id="mod"><div class="box">
+  <h3 id="mt">NEW TARGET</h3>
+  <label for="fn">NAME</label><input id="fn" maxlength="60">
+  <label for="fu">URL</label><input id="fu" placeholder="https://" dir="ltr">
+  <label for="fr">GITHUB REPO (owner/name)</label><input id="fr" dir="ltr" placeholder="adham/el-sadat-school" autocomplete="off">
+  <label for="fb">BRANCH</label><input id="fb" dir="ltr" placeholder="main" autocomplete="off">
+  <label for="ft" id="ftl">GITHUB TOKEN</label><input id="ft" type="password" dir="ltr" autocomplete="new-password" placeholder="fine-grained token, Contents: read/write">
+  <div id="err" role="alert"></div>
+  <div class="row"><button class="b" id="ms">SAVE</button><button class="b r" id="mc">CANCEL</button></div>
+</div></div>
+
+<script>
+const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S={sites:[],events:[]},sel=null,edit=null,editorTarget=new URLSearchParams(location.search).get('editor');
+async function api(p,m='GET',b){const r=await fetch('/api/'+p,{method:m,headers:{'content-type':'application/json'},body:b?JSON.stringify(b):undefined});
+ if(r.status===401){location='/login';return null}const d=await r.json();if(!r.ok)throw new Error(d.error||'ERROR');return d}
+const pull=async()=>{try{const d=await api('state');if(d){S=d;ui();if(editorTarget){const s=S.sites.find(x=>x.id===editorTarget);editorTarget=null;if(s){sel=s.id;ui();openEd(s)}}}}catch{}};
+const st=s=>!s.state?'wait':s.state.ok?'up':'down';
+const up=s=>{const h=s.hist||[];return h.length?Math.round(h.filter(x=>x.ok).length/h.length*100):null};
+
+/* ---------- UI ---------- */
+function ui(){
+ const n=S.sites.length,on=S.sites.filter(s=>st(s)==='up').length,ms=S.sites.filter(s=>s.state?.ok).map(s=>s.state.ms),avg=ms.length?Math.round(ms.reduce((a,b)=>a+b,0)/ms.length):0;
+ $('cnt').textContent=on+'/'+n+' ONLINE';
+ $('list').innerHTML=S.sites.map(s=>`<div class="site ${st(s)} ${sel===s.id?'on':''}" data-id="${s.id}" tabindex="0"><i></i><div><b>${esc(s.name)}</b><small>${esc(new URL(s.url).host)}</small></div><em>${s.state?s.state.ms+'ms':'--'}</em></div>`).join('')||'<small>NO TARGETS. ADD ONE.</small>';
+ $('log').innerHTML=S.events.map(e=>`<li class="${e.lvl}">[${new Date(e.t).toLocaleTimeString('en-GB')}] ${esc(e.msg)}</li>`).join('')||'<li>NO EVENTS</li>';
+ const ups=S.sites.map(up).filter(x=>x!==null);
+ $('foot').innerHTML=`<span>TARGETS <b>${n}</b></span><span>ONLINE <b>${on}</b></span><span>OFFLINE <b style="color:${n-on?'var(--bad)':'var(--g)'}">${n-on}</b></span><span>AVG LATENCY <b>${avg||'--'} ms</b></span><span>UPTIME <b>${ups.length?Math.round(ups.reduce((a,b)=>a+b,0)/ups.length)+'%':'--'}</b></span><span>AUTO-SCAN <b>60s</b></span>`;
+ const s=S.sites.find(x=>x.id===sel);
+ if(!s){$('det').innerHTML='<h2>&gt; TARGET INTEL</h2><small style="color:var(--g2)">SELECT A TARGET FROM THE LIST.</small>';return}
+ const x=s.state||{},h=(s.hist||[]).slice(-40),mx=Math.max(1,...h.map(a=>a.ms));
+ const pts=h.map((a,i)=>`${h.length>1?i/(h.length-1)*300:0},${44-(a.ms/mx)*40}`).join(' ');
+ $('det').innerHTML=`<h2><span>&gt; TARGET INTEL</span><span style="color:${st(s)==='up'?'var(--g)':'var(--bad)'}">${st(s)==='up'?'ONLINE':st(s)==='down'?'OFFLINE':'PENDING'}</span></h2>
+ <div class="kv"><span>NAME</span><b>${esc(s.name)}</b><span>URL</span><b dir="ltr">${esc(s.url)}</b><span>HTTP</span><b>${x.code||x.err||'--'}</b><span>LATENCY</span><b>${x.ms??'--'} ms</b>
+ <span>SSL EXPIRES</span><b>${x.ssl==null?'--':x.ssl+' days'}</b><span>SERVER IP</span><b>${esc(x.ip||'--')}</b><span>LOCATION</span><b>${s.geo?esc(s.geo.city+', '+s.geo.country):'--'}</b><span>UPTIME</span><b>${up(s)==null?'--':up(s)+'%'}</b></div>
+ <svg class="sp" viewBox="0 0 300 46" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="#00ff66" stroke-width="1.6"/></svg>
+ <div class="row"><a class="b" style="text-decoration:none" href="${esc(s.url)}" target="_blank" rel="noopener">OPEN</a><button class="b" data-a="ed">CONTENT EDITOR</button><button class="b" data-a="edit">EDIT</button><button class="b r" data-a="del">DELETE</button></div>`}
+$('list').onclick=e=>{const d=e.target.closest('.site');if(d){sel=sel===d.dataset.id?null:d.dataset.id;focusSel();ui()}};
+$('list').onkeydown=e=>{if(e.key==='Enter')e.target.click()};
+$('det').onclick=async e=>{const a=e.target.dataset.a,s=S.sites.find(x=>x.id===sel);if(!a||!s)return;
+ if(a==='edit')openM(s);if(a==='ed')openEd(s);if(a==='del'&&confirm('Remove '+s.name+' from monitoring?')){S=await api('sites/'+s.id,'DELETE');sel=null;ui()}};
+$('scan').onclick=async()=>{$('scan').textContent='SCANNING...';try{S=await api('scan','POST',{});ui()}catch{}$('scan').textContent='SCAN'};
+$('out').onclick=async()=>{await api('logout','POST',{});location='/login'};
+function openM(s){edit=s;$('mt').textContent=s?'EDIT TARGET':'NEW TARGET';$('fn').value=s?.name||'';$('fu').value=s?.url||'https://';$('fr').value=s?.repo||'';$('fb').value=s?.branch||'main';$('ft').value='';$('ftl').textContent=s&&s.hasToken?'GITHUB TOKEN (SAVED - leave empty to keep)':'GITHUB TOKEN';$('err').textContent='';$('mod').classList.add('on');$('fn').focus()}
+$('add').onclick=()=>openM();$('mc').onclick=()=>$('mod').classList.remove('on');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('mod').classList.remove('on')});
+$('ms').onclick=async()=>{$('ms').disabled=true;try{const b={name:$('fn').value,url:$('fu').value,repo:$('fr').value,branch:$('fb').value,token:$('ft').value};S=edit?await api('sites/'+edit.id,'PUT',b):await api('sites','POST',b);$('mod').classList.remove('on');ui()}catch(e){$('err').textContent='! '+e.message}$('ms').disabled=false};
+setInterval(()=>$('clock').textContent=new Date().toUTCString().slice(5,25)+' UTC',1000);
+pull();setInterval(pull,10000);
+
+/* ---------- CONTENT EDITOR ---------- */
+let E={s:null,files:[],path:null,sha:null,dirty:false};
+const eStat=m=>$('estat').textContent=m;
+function setEd(p,content){E.path=p;E.dirty=false;$('epath').textContent=p||'NO FILE SELECTED';$('etx').value=content??'';$('etx').disabled=content==null}
+function tree(){const q=$('eq').value.toLowerCase();$('etree').innerHTML=E.files.filter(f=>f.path.toLowerCase().includes(q)).sort((a,b)=>a.path.localeCompare(b.path)).map(f=>`<div class="fi ${f.path===E.path?'on':''}" data-p="${esc(f.path)}" title="${esc(f.path)}">${esc(f.path)}${f.path===E.path&&E.dirty?' *':''}</div>`).join('')}
+async function openEd(s){E={s,files:[],path:null,sha:null,dirty:false};$('edt').textContent='EDITOR // '+s.name;setEd(null);$('etree').innerHTML='';$('ed').classList.add('on');
+ if(!s.repo||!s.hasToken){eStat('! Connect GitHub first: close, press EDIT on this target, fill REPO + TOKEN, save.');return}
+ eStat('LOADING FILES...');try{const d=await api('sites/'+s.id+'/tree');E.files=d.files;tree();eStat(d.files.length+' files. Pick one to edit.')}catch(e){eStat('! '+e.message)}}
+async function openFile(p){if(E.dirty&&!confirm('Discard unsaved changes?'))return;eStat('LOADING '+p+'...');
+ try{const d=await api('sites/'+E.s.id+'/file?path='+encodeURIComponent(p));E.sha=d.sha;if(d.binary){setEd(p,null);eStat('Binary or very large file: cannot be edited here.')}else{setEd(p,d.content);eStat('Loaded. Ctrl+S to save & deploy.')}tree()}catch(e){eStat('! '+e.message)}}
+async function saveEd(){if(!E.path||$('etx').disabled)return;$('esave').disabled=true;eStat('COMMITTING...');
+ try{const d=await api('sites/'+E.s.id+'/file','PUT',{path:E.path,content:$('etx').value,sha:E.sha,message:$('emsg').value});E.sha=d.sha;E.dirty=false;
+  if(!E.files.some(f=>f.path===E.path))E.files.push({path:E.path});tree();eStat('COMMITTED. Vercel is redeploying, usually live in under a minute.');pull()}catch(e){eStat('! '+e.message)}$('esave').disabled=false}
+$('etree').onclick=e=>{const d=e.target.closest('.fi');if(d)openFile(d.dataset.p)};
+$('eq').oninput=tree;
+$('etx').oninput=()=>{if(!E.dirty){E.dirty=true;tree()}};
+$('etx').onkeydown=e=>{if(e.key==='Tab'){e.preventDefault();const t=e.target,a=t.selectionStart;t.setRangeText('  ',a,t.selectionEnd,'end');E.dirty=true}};
+$('esave').onclick=saveEd;
+$('enew').onclick=()=>{if(!E.s||!E.s.repo)return;if(E.dirty&&!confirm('Discard unsaved changes?'))return;const p=(prompt('New file path (e.g. pages/about.html):')||'').trim();if(!p)return;
+ if(E.files.some(f=>f.path===p)){eStat('! File already exists.');return}setEd(p,'');E.sha=null;E.dirty=true;$('etx').focus();tree();eStat('New file. Write content, then SAVE & DEPLOY.')};
+$('edel').onclick=async()=>{if(!E.path||!E.sha)return;if(!confirm('Delete '+E.path+' from the repo? This redeploys the site.'))return;
+ try{await api('sites/'+E.s.id+'/file','DELETE',{path:E.path,sha:E.sha,message:$('emsg').value});E.files=E.files.filter(f=>f.path!==E.path);setEd(null);tree();eStat('Deleted and committed.');pull()}catch(e){eStat('! '+e.message)}};
+$('eclose').onclick=()=>{if(E.dirty&&!confirm('Discard unsaved changes?'))return;$('ed').classList.remove('on')};
+document.addEventListener('keydown',e=>{if($('ed').classList.contains('on')&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveEd()}});
+addEventListener('beforeunload',e=>{if(E.dirty)e.preventDefault()});
+
+/* ---------- GLOBE ---------- */
+const cv=$('globe'),g=cv.getContext('2d'),D=Math.PI/180,HUB={lat:30.04,lon:31.24};
+let W,H,R,cx,cy,yaw=1.2,tilt=.38,tYaw=null,tTilt=.38,drag=null,idle=0,dots=[],grat=true;
+function fit(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);cx=W/2;cy=H/2+(innerWidth>1000?10:0);R=Math.min(W*(innerWidth>1000?.34:.45),H*.4)}
+addEventListener('resize',fit);fit();
+const vec=(la,lo,k=1)=>[Math.cos(la*D)*Math.sin(lo*D)*k,Math.sin(la*D)*k,Math.cos(la*D)*Math.cos(lo*D)*k];
+function rot(v){const c=Math.cos(yaw),s=Math.sin(yaw),x=v[0]*c-v[2]*s,z=v[2]*c+v[0]*s,ct=Math.cos(tilt),stl=Math.sin(tilt);return[cx+x*R,cy-(v[1]*ct-z*stl)*R,v[1]*stl+z*ct]}
+async function land(){try{
+ const t=await(await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json')).json(),f=topojson.feature(t,t.objects.land);
+ const c=document.createElement('canvas');c.width=360;c.height=180;const x=c.getContext('2d');x.fillStyle='#fff';
+ (f.features||[f]).forEach(ft=>{const gm=ft.geometry,polys=gm.type==='Polygon'?[gm.coordinates]:gm.coordinates;
+  polys.forEach(p=>{x.beginPath();p.forEach(r=>r.forEach(([lo,la],i)=>i?x.lineTo(lo+180,90-la):x.moveTo(lo+180,90-la)));x.fill('evenodd')})});
+ const px=x.getImageData(0,0,360,180).data,out=[];
+ for(let la=-84;la<=84;la+=2.4){const st=2.4/Math.max(.2,Math.cos(la*D));for(let lo=-180;lo<180;lo+=st){if(px[((Math.floor(90-la)*360)+Math.floor(lo+180))*4+3]>0)out.push(vec(la,lo))}}
+ dots=out;grat=false}catch{}}
+land();
+function arc(a,b,k){const A=vec(a.lat,a.lon),B=vec(b.lat,b.lon),pts=[];for(let i=0;i<=40;i++){const t=i/40,v=[0,1,2].map(j=>A[j]*(1-t)+B[j]*t),l=Math.hypot(...v)||1,e=1+.2*Math.sin(Math.PI*t)*k;pts.push(v.map(q=>q/l*e))}return pts}
+function focusSel(){const s=S.sites.find(x=>x.id===sel),p=s&&pos(s);if(p){tYaw=p.lon*D;tTilt=Math.max(-.2,Math.min(.9,p.lat*D*.6))}else{tYaw=null;tTilt=.38}}
+function pos(s){return s.geo?{lat:s.geo.lat,lon:s.geo.lon}:{lat:HUB.lat+12,lon:HUB.lon+14}}
+function frame(now){
+ g.clearRect(0,0,W,H);
+ if(tYaw!==null){let d=((tYaw-yaw+Math.PI*3)%(Math.PI*2))-Math.PI;yaw+=d*.06}else if(!drag&&now>idle)yaw+=.0016;
+ tilt+=(tTilt-tilt)*.06;
+ const gr=g.createRadialGradient(cx,cy,R*.9,cx,cy,R*1.35);gr.addColorStop(0,'#00ff6638');gr.addColorStop(1,'#00ff6600');g.fillStyle=gr;g.beginPath();g.arc(cx,cy,R*1.35,0,7);g.fill();
+ const bg=g.createRadialGradient(cx-R*.3,cy-R*.3,R*.1,cx,cy,R);bg.addColorStop(0,'#04301a');bg.addColorStop(1,'#010d06');g.fillStyle=bg;g.beginPath();g.arc(cx,cy,R,0,7);g.fill();
+ g.strokeStyle='#00ff6633';g.lineWidth=1;
+ for(let lo=-180;lo<180;lo+=30){g.beginPath();let s=false;for(let la=-90;la<=90;la+=6){const p=rot(vec(la,lo));if(p[2]>0){s?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);s=true}else s=false}g.stroke()}
+ for(let la=-60;la<=60;la+=30){g.beginPath();let s=false;for(let lo=-180;lo<=180;lo+=6){const p=rot(vec(la,lo));if(p[2]>0){s?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);s=true}else s=false}g.stroke()}
+ g.fillStyle='#00ff66';for(const v of dots){const p=rot(v);if(p[2]>0){g.globalAlpha=.25+.7*p[2];g.fillRect(p[0],p[1],1.8,1.8)}}g.globalAlpha=1;
+ g.strokeStyle='#00ff66';g.lineWidth=1.5;g.shadowColor='#00ff66';g.shadowBlur=14;g.beginPath();g.arc(cx,cy,R,0,7);g.stroke();g.shadowBlur=0;
+ const hub=rot(vec(HUB.lat,HUB.lon,1.01));
+ S.sites.forEach((s,i)=>{const q=pos(s),bad=st(s)==='down',col=bad?'#ff3b4e':'#00ff66',on=s.id===sel;
+  g.strokeStyle=col;g.lineWidth=on?2:1;g.globalAlpha=on?1:.6;g.beginPath();let b=false;
+  const pts=arc(HUB,q,1+(i%3)*.3).map(rot);pts.forEach(p=>{if(p[2]>0){b?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);b=true}else b=false});g.stroke();g.globalAlpha=1;
+  const k=Math.floor(((now/1800+i*.31)%1)*40),pk=pts[k];if(pk&&pk[2]>0){g.fillStyle='#fff';g.shadowColor=col;g.shadowBlur=10;g.fillRect(pk[0]-2,pk[1]-2,4,4);g.shadowBlur=0}
+  const m=rot(vec(q.lat,q.lon,1.01));if(m[2]>0){const pu=(Math.sin(now/300+i)+1)/2;g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.4;g.beginPath();g.arc(m[0],m[1],5+pu*(on?9:6),0,7);g.globalAlpha=.7-pu*.5;g.stroke();g.globalAlpha=1;g.beginPath();g.arc(m[0],m[1],3.4,0,7);g.fill();
+   g.font='12px "Share Tech Mono",monospace';g.fillText(s.name.slice(0,22),m[0]+10,m[1]-8)}});
+ if(hub[2]>0){const pu=(Math.sin(now/500)+1)/2;g.strokeStyle='#fff';g.lineWidth=1.4;g.beginPath();g.arc(hub[0],hub[1],6+pu*8,0,7);g.globalAlpha=.8-pu*.6;g.stroke();g.globalAlpha=1;g.fillStyle='#fff';g.beginPath();g.arc(hub[0],hub[1],3.5,0,7);g.fill();g.font='12px "Share Tech Mono",monospace';g.fillText('HQ // EGYPT',hub[0]+10,hub[1]+14)}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};tYaw=null;cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'};
+cv.onpointermove=e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.006;tTilt=Math.max(-.6,Math.min(1.1,tTilt+(e.clientY-drag.y)*.004));drag={x:e.clientX,y:e.clientY}};
+cv.onpointerup=cv.onpointercancel=()=>{drag=null;idle=performance.now()+3500;cv.style.cursor='grab'};
+</script>
+</body>
+</html>

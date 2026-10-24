@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07110d">
+<title>مركز التحكم | ADHAM GLOBAL CONTROL</title>
+<style>
+:root{color-scheme:dark;--bg:#07110d;--panel:#0b1913;--panel2:#0e2118;--line:#1b4931;--green:#52f59a;--muted:#8ab69d;--red:#ff6675;--yellow:#f5ca63;--text:#e2f4e9}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 15% 0%,#103923 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.6 "Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background:repeating-linear-gradient(0deg,transparent 0 3px,#72ffa307 3px 4px)}
+button,input{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1440px;margin:auto;padding:24px}
+header{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--line);background:#09170feF;border-radius:14px;box-shadow:0 12px 48px #0004}
+.brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.mark{width:42px;height:42px;display:grid;place-items:center;border:1px solid #52f59a7a;border-radius:12px;color:var(--green);font:700 20px Consolas,monospace;text-shadow:0 0 14px #52f59a}
+h1{font-size:18px;line-height:1.3;margin:0;letter-spacing:.4px}
+.subtitle{color:var(--muted);font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid #347c52;border-radius:8px;padding:9px 13px;color:var(--green);background:#0b2116;transition:.15s}
+.btn:hover{background:#153923;border-color:var(--green)}
+.btn.primary{background:var(--green);border-color:var(--green);color:#052011;font-weight:700}
+.btn.primary:hover{background:#8affba}
+.btn.danger{border-color:#85414a;color:var(--red);background:#261116}
+.btn:disabled{opacity:.55;cursor:wait}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;margin-top:16px}
+.main,.side{display:grid;gap:16px;align-content:start;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.panel,.stat{background:linear-gradient(145deg,#0d1d15,#09150f);border:1px solid var(--line);border-radius:12px}
+.stat{padding:16px}
+.stat-label{font-size:12px;color:var(--muted)}
+.stat-value{font:700 25px Consolas,monospace;margin-top:3px;color:var(--green)}
+.stat-value.alert{color:var(--red)}
+.panel{padding:17px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+h2{font-size:15px;margin:0;font-weight:650}
+.panel-head small,.dim{color:var(--muted);font-size:12px}
+.filter{width:min(100%,230px);padding:8px 10px;border:1px solid var(--line);background:#06100b;color:var(--text);border-radius:7px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:right;min-width:600px}
+th{font-size:11px;color:var(--muted);font-weight:500;padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid #1b493166;font-size:13px}
+tbody tr:last-child td{border-bottom:0}
+.site-name{font-weight:650;color:var(--text)}
+.url{display:block;direction:ltr;text-align:right;color:var(--muted);font:11px Consolas,monospace;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:3px 9px;border:1px solid #286340;border-radius:99px;color:var(--green);font-size:11px;white-space:nowrap}
+.badge:before{content:"";width:7px;height:7px;background:currentColor;border-radius:50%;box-shadow:0 0 8px currentColor}
+.badge.down{color:var(--red);border-color:#753b43}
+.badge.wait{color:var(--yellow);border-color:#6d5a2b}
+.table-actions{display:flex;gap:6px}
+.mini{padding:5px 8px;border:1px solid var(--line);background:#0a1a11;color:var(--muted);border-radius:6px;font-size:11px;white-space:nowrap}
+.mini:hover{color:var(--green);border-color:#347c52}
+.mini.delete:hover{color:var(--red);border-color:#85414a}
+.empty,.notice{color:var(--muted);padding:20px;text-align:center}
+.notice{display:none;text-align:right;padding:10px 13px;border:1px solid #8a4148;color:#ff9aa4;border-radius:8px;background:#281217}
+.notice.show{display:block}
+.event-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.event{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#c5dece}
+.event time{color:var(--muted);font:11px Consolas,monospace;white-space:nowrap;padding-top:2px}
+.event-dot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:7px;flex:none}
+.event.warn .event-dot{background:var(--yellow)}.event.bad .event-dot{background:var(--red)}
+.quick{display:grid;gap:9px}
+.quick .btn{text-align:right}
+.tip{font-size:12px;color:var(--muted);margin:2px 0 0}
+.foot{display:flex;justify-content:space-between;gap:12px;padding:13px 3px 0;color:var(--muted);font-size:11px}
+.modal{position:fixed;inset:0;z-index:5;display:none;place-items:center;padding:16px;background:#020805d9}
+.modal.open{display:grid}
+.dialog{width:min(100%,520px);max-height:95vh;overflow:auto;background:#0b1913;border:1px solid #347c52;border-radius:14px;padding:22px;box-shadow:0 20px 80px #0008}
+.dialog h2{margin-bottom:4px}
+.dialog p{margin:0 0 16px;color:var(--muted);font-size:12px}
+.field{margin-top:12px}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+.field input{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:#06100b;color:var(--text);outline:none}
+.field input:focus,.filter:focus{border-color:var(--green)}
+.ltr{direction:ltr;text-align:left}
+.form-error{min-height:20px;margin-top:8px;color:var(--red);font-size:12px}
+.dialog-actions{display:flex;gap:8px;margin-top:14px}
+.hint{margin-top:12px;padding:11px;border:1px solid #286340;border-radius:8px;color:var(--muted);font-size:12px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.quick-panel{grid-column:1/-1}}
+@media(max-width:680px){.shell{padding:12px}header{padding:13px;align-items:flex-start;flex-wrap:wrap}.brand{flex-basis:100%}.actions{width:100%}.actions .btn{flex:1}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.side{grid-template-columns:1fr}.quick-panel{grid-column:auto}.panel{padding:13px}.panel-head{align-items:flex-start;flex-direction:column}.filter{width:100%}.foot{flex-direction:column;gap:3px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand"><div class="mark" aria-hidden="true">⌘</div><div><h1>مركز التحكم العالمي</h1><div class="subtitle">ADHAM GLOBAL CONTROL // مراقبة وإدارة المواقع</div></div></div>
+    <div class="actions">
+      <button class="btn" id="scan">فحص الآن</button>
+      <button class="btn primary" id="add">＋ إضافة موقع</button>
+      <button class="btn danger" id="logout">تسجيل الخروج</button>
+    </div>
+  </header>
+  <div class="grid">
+    <main class="main">
+      <div class="stats" aria-label="ملخص المواقع">
+        <section class="stat"><div class="stat-label">إجمالي المواقع</div><div class="stat-value" id="total">—</div></section>
+        <section class="stat"><div class="stat-label">متصل الآن</div><div class="stat-value" id="online">—</div></section>
+        <section class="stat"><div class="stat-label">غير متصل</div><div class="stat-value" id="offline">—</div></section>
+        <section class="stat"><div class="stat-label">متوسط الاستجابة</div><div class="stat-value" id="latency">—</div></section>
+      </div>
+      <div id="notice" class="notice" role="alert"></div>
+      <section class="panel">
+        <div class="panel-head"><div><h2>المواقع المراقبة</h2><small>الحالة، الاستجابة، وإعدادات الربط</small></div><input class="filter" id="filter" type="search" placeholder="ابحث عن موقع..." aria-label="ابحث عن موقع"></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>الموقع</th><th>الحالة</th><th>الاستجابة</th><th>التوفر</th><th>إجراءات</th></tr></thead>
+          <tbody id="sites"></tbody>
+        </table></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>سجل الأحداث</h2><small>آخر تحديث دوري كل 60 ثانية</small></div>
+        <ul class="event-list" id="events"></ul>
+      </section>
+    </main>
+    <aside class="side">
+      <section class="panel quick-panel">
+        <div class="panel-head"><h2>إدارة الموقع</h2></div>
+        <div class="quick">
+          <button class="btn" id="open-editor">فتح محرر ملفات الموقع المحدد</button>
+          <button class="btn" id="refresh">تحديث بيانات اللوحة</button>
+        </div>
+        <div class="hint">تعديل محتوى الملفات ونشره يتم من خلال GitHub. أضف إعدادات المستودع والفرع ورمز وصول محدود الصلاحيات عند إضافة الموقع أو تعديله، ثم افتح محرر الملفات.</div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>حالة النظام</h2></div>
+        <div class="event-list">
+          <div class="event"><span class="event-dot"></span><span>الاتصال بالخادم: <b style="color:var(--green)">نشط</b></span></div>
+          <div class="event"><span class="event-dot"></span><span>حفظ إعدادات المواقع في ملف البيانات المحلي</span></div>
+          <div class="event"><span class="event-dot"></span><span>النشر: عبر مستودع GitHub المرتبط بكل موقع</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+  <footer class="foot"><span>ADHAM GLOBAL CONTROL</span><span id="updated">بانتظار البيانات...</span><span>الفحص التلقائي كل دقيقة</span></footer>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <form class="dialog" id="site-form">
+    <h2 id="modal-title">إضافة موقع</h2>
+    <p>بيانات الموقع تستخدم لمراقبته وربط محرر الملفات بمستودعك.</p>
+    <div class="field"><label for="name">اسم الموقع</label><input id="name" maxlength="60" required></div>
+    <div class="field"><label for="url">رابط الموقع</label><input id="url" class="ltr" type="url" placeholder="https://example.com" required></div>
+    <div class="field"><label for="repo">مستودع GitHub (اختياري) — owner/name</label><input id="repo" class="ltr" placeholder="owner/repository" autocomplete="off"></div>
+    <div class="field"><label for="branch">الفرع</label><input id="branch" class="ltr" value="main" autocomplete="off"></div>
+    <div class="field"><label for="token">رمز GitHub (صلاحية محتوى المستودع فقط)</label><input id="token" class="ltr" type="password" autocomplete="new-password" placeholder="اتركه فارغًا للإبقاء على الرمز المحفوظ"></div>
+    <div class="form-error" id="form-error" role="alert"></div>
+    <div class="dialog-actions"><button class="btn primary" id="save" type="submit">حفظ</button><button class="btn" id="cancel" type="button">إلغاء</button></div>
+  </form>
+</div>
+<script>
+const $=id=>document.getElementById(id),escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state={sites:[],events:[]},editing=null,selected=null;
+async function api(path,method='GET',body){
+  const response=await fetch('/api/'+path,{method,headers:{'content-type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
+  if(response.status===401){location.href='/login';return null}
+  let result;try{result=await response.json()}catch{throw new Error('استجابة غير مفهومة من الخادم')}
+  if(!response.ok)throw new Error(result.error||'تعذر تنفيذ الطلب');
+  return result;
+}
+function uptime(site){const history=site.hist||[];return history.length?Math.round(history.filter(item=>item.ok).length/history.length*100):null}
+function status(site){return !site.state?'wait':site.state.ok?'up':'down'}
+function showError(message){$('notice').textContent=message;$('notice').classList.add('show')}
+function clearError(){$('notice').textContent='';$('notice').classList.remove('show')}
+function render(){
+  const sites=state.sites||[],online=sites.filter(site=>status(site)==='up').length,latencies=sites.filter(site=>site.state?.ok).map(site=>site.state.ms);
+  $('total').textContent=sites.length;$('online').textContent=online;$('offline').textContent=sites.length-online;
+  $('offline').classList.toggle('alert',sites.length>online);
+  $('latency').textContent=latencies.length?Math.round(latencies.reduce((sum,value)=>sum+value,0)/latencies.length)+'ms':'—';
+  const query=$('filter').value.trim().toLocaleLowerCase();
+  const filtered=sites.filter(site=>(site.name+' '+site.url).toLocaleLowerCase().includes(query));
+  $('sites').innerHTML=filtered.length?filtered.map(site=>{
+    const st=status(site),label=st==='up'?'متصل':st==='down'?'غير متصل':'قيد الفحص',u=uptime(site);
+    return `<tr><td><span class="site-name">${escapeHtml(site.name)}</span><a class="url" href="${escapeHtml(site.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(site.url)}</a></td><td><span class="badge ${st}">${label}</span></td><td>${site.state?.ms??'—'}${site.state?' ms':''}</td><td>${u===null?'—':u+'%'}</td><td><div class="table-actions"><button class="mini" data-action="editor" data-id="${escapeHtml(site.id)}">تحرير</button><button class="mini" data-action="edit" data-id="${escapeHtml(site.id)}">إعدادات</button><button class="mini delete" data-action="delete" data-id="${escapeHtml(site.id)}">حذف</button></div></td></tr>`;
+  }).join(''):`<tr><td class="empty" colspan="5">${sites.length?'لا توجد نتائج مطابقة.':'لا توجد مواقع بعد. أضف موقعًا للبدء.'}</td></tr>`;
+  $('events').innerHTML=(state.events||[]).slice(0,12).map(event=>`<li class="event ${escapeHtml(event.lvl)}"><span class="event-dot"></span><time>${new Date(event.t).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</time><span>${escapeHtml(event.msg)}</span></li>`).join('')||'<li class="dim">لا توجد أحداث مسجلة.</li>';
+  $('updated').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar-EG');
+}
+async function refresh(){try{const result=await api('state');if(result){state=result;render();clearError()}}catch(error){showError('تعذر تحميل البيانات: '+error.message)}}
+function closeModal(){$('modal').classList.remove('open');$('form-error').textContent=''}
+function openModal(site){
+  editing=site||null;$('modal-title').textContent=site?'تعديل إعدادات الموقع':'إضافة موقع';
+  $('name').value=site?.name||'';$('url').value=site?.url||'';$('repo').value=site?.repo||'';$('branch').value=site?.branch||'main';
+  $('token').value='';$('token').placeholder=site?.hasToken?'رمز محفوظ — اتركه فارغًا للإبقاء عليه':'رمز وصول محدود الصلاحيات';
+  $('form-error').textContent='';$('modal').classList.add('open');$('name').focus();
+}
+function openEditor(site){location.href='/?editor='+encodeURIComponent(site.id)}
+$('sites').addEventListener('click',async event=>{
+  const button=event.target.closest('button[data-action]');if(!button)return;
+  const site=state.sites.find(item=>item.id===button.dataset.id);if(!site)return;
+  selected=site.id;
+  if(button.dataset.action==='editor'){openEditor(site);return}
+  if(button.dataset.action==='edit'){openModal(site);return}
+  if(button.dataset.action==='delete'&&confirm('هل تريد حذف '+site.name+' من قائمة المراقبة؟')){
+    button.disabled=true;try{state=await api('sites/'+encodeURIComponent(site.id),'DELETE');selected=null;render();clearError()}catch(error){showError('تعذر حذف الموقع: '+error.message);button.disabled=false}
+  }
+});
+$('site-form').addEventListener('submit',async event=>{
+  event.preventDefault();const button=$('save');button.disabled=true;$('form-error').textContent='';
+  const body={name:$('name').value,url:$('url').value,repo:$('repo').value,branch:$('branch').value,token:$('token').value};
+  try{state=editing?await api('sites/'+encodeURIComponent(editing.id),'PUT',body):await api('sites','POST',body);if(state){closeModal();render();clearError()}}
+  catch(error){$('form-error').textContent='تعذر الحفظ: '+error.message}
+  finally{button.disabled=false}
+});
+$('add').addEventListener('click',()=>openModal());$('cancel').addEventListener('click',closeModal);
+$('modal').addEventListener('click',event=>{if(event.target===$('modal'))closeModal()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal()});
+$('filter').addEventListener('input',render);
+$('scan').addEventListener('click',async()=>{
+  const button=$('scan');button.disabled=true;button.textContent='جاري الفحص...';
+  try{const result=await api('scan','POST',{});if(result){state=result;render();clearError()}}
+  catch(error){showError('فشل فحص المواقع: '+error.message)}
+  finally{button.disabled=false;button.textContent='فحص الآن'}
+});
+$('refresh').addEventListener('click',refresh);
+$('open-editor').addEventListener('click',()=>{const site=state.sites.find(item=>item.id===selected)||state.sites[0];if(site)openEditor(site);else showError('أضف موقعًا أولًا لفتح محرر الملفات.')});
+$('logout').addEventListener('click',async()=>{try{await api('logout','POST',{});location.href='/login'}catch(error){showError('تعذر تسجيل الخروج: '+error.message)}});
+$('sites').addEventListener('focusin',event=>{const button=event.target.closest('button[data-id]');if(button)selected=button.dataset.id});
+refresh();setInterval(refresh,10000);
+</script>
+</body>
+</html>

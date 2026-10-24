@@ -1,0 +1,13 @@
+{
+  "name": "adham-global-control",
+  "version": "1.0.0",
+  "description": "Real-time command center for monitoring my websites",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "reset-pass": "node server.js --reset-pass"
+  },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED",
+  "private": true
+}

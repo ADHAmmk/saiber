@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHAM GLOBAL CONTROL // ACCESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;background:#010804;color:#00ff66;font-family:'Share Tech Mono','Courier New',monospace;display:grid;place-items:center;padding:16px;
+background-image:radial-gradient(circle at 50% 40%,#003a18 0,#010804 65%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#00ff6608 2px 3px)}
+.t{width:100%;max-width:460px;border:1px solid #00ff6655;background:#020f07ee;padding:28px;box-shadow:0 0 40px #00ff6622,inset 0 0 30px #00ff6610}
+h1{font-size:22px;letter-spacing:4px;text-shadow:0 0 12px #00ff66;margin-bottom:6px}
+.s{color:#00b348;font-size:12.5px;margin-bottom:18px;line-height:1.8;min-height:76px;white-space:pre-wrap}
+label{display:block;font-size:12px;color:#00b348;margin-bottom:6px}
+input{width:100%;background:#000;border:1px solid #00ff6666;color:#00ff66;padding:12px;font:inherit;font-size:16px;letter-spacing:3px;outline:none}
+input:focus{border-color:#00ff66;box-shadow:0 0 14px #00ff6644}
+button{width:100%;margin-top:14px;padding:12px;background:#00ff66;color:#001a0a;border:0;font:inherit;font-size:16px;letter-spacing:3px;cursor:pointer}
+button:hover{background:#6dffa5}button:disabled{opacity:.5;cursor:wait}
+#e{color:#ff3b4e;margin-top:12px;min-height:20px;font-size:13px}
+</style>
+</head>
+<body>
+<form class="t" id="f" autocomplete="off">
+  <h1>ADHAM GLOBAL CONTROL</h1>
+  <div class="s" id="boot"></div>
+  <label for="p">&gt; ENTER ACCESS KEY</label>
+  <input id="p" type="password" autocomplete="current-password" autofocus required>
+  <button id="b">AUTHENTICATE</button>
+  <div id="e" role="alert"></div>
+</form>
+<script>
+const lines=['[ OK ] secure channel established','[ OK ] globe renderer ready','[ -- ] awaiting operator credentials'];
+let i=0,j=0;const el=document.getElementById('boot');
+(function type(){if(i>=lines.length)return;el.textContent+=lines[i][j++]||'';if(j>lines[i].length){el.textContent+='\n';i++;j=0}setTimeout(type,i<lines.length?14:0)})();
+document.getElementById('f').onsubmit=async e=>{e.preventDefault();const b=document.getElementById('b'),er=document.getElementById('e');
+ b.disabled=true;er.textContent='';
+ try{const r=await fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:document.getElementById('p').value})});
+  const d=await r.json();if(r.ok)location='/';else{er.textContent='! '+(d.error||'ERROR');document.getElementById('p').select()}}
+ catch{er.textContent='! SERVER UNREACHABLE'}b.disabled=false};
+ 
+</script>
+</body>
+</html>

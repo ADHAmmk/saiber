@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d0a">
+  <title>مرصد المشاريع | لوحة التحكم</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d0a;
+      --surface: #0d1510;
+      --surface-2: #111c15;
+      --surface-3: #17251b;
+      --line: #203528;
+      --text: #e1f4e6;
+      --muted: #82988a;
+      --green: #54f58b;
+      --green-soft: #a2ffbd;
+      --amber: #f6ca72;
+      --red: #ff7180;
+      --blue: #76d8ff;
+      --radius: 14px;
+      font-family: "Cairo", "Segoe UI", Tahoma, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 80% -15%, #1c482b55, transparent 44%),
+        linear-gradient(#54f58b08 1px, transparent 1px),
+        linear-gradient(90deg, #54f58b08 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, 34px 34px, 34px 34px, auto;
+      font-size: 14px;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
+    }
+    a { color: inherit; text-decoration: none; }
+    .app { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      z-index: 30;
+      inset: 0 0 0 auto;
+      display: flex;
+      width: 254px;
+      flex-direction: column;
+      padding: 22px 16px;
+      background: #0b120e;
+      border-left: 1px solid var(--line);
+      transition: transform .22s ease;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 2px 7px 27px; }
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #54f58b66;
+      border-radius: 12px;
+      color: var(--green);
+      background: #54f58b12;
+      box-shadow: 0 0 22px #54f58b16;
+      font-size: 21px;
+    }
+    .brand strong { display: block; font-size: 15px; letter-spacing: .2px; }
+    .brand small { display: block; margin-top: 2px; color: var(--muted); direction: ltr; text-align: right; font: 10px/1.5 Consolas, monospace; }
+    .nav-label { padding: 0 10px 9px; color: #60796a; font: 10px Consolas, monospace; letter-spacing: 1.5px; }
+    .nav { display: grid; gap: 5px; }
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 11px 12px;
+      color: var(--muted);
+      text-align: right;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .nav button:hover { color: var(--text); background: #ffffff08; }
+    .nav button.active { color: var(--green-soft); background: #54f58b12; border-color: #54f58b32; }
+    .nav-icon { width: 19px; color: var(--green); text-align: center; font-family: Consolas, monospace; }
+    .sidebar-bottom { margin-top: auto; }
+    .system-box { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: #ffffff04; }
+    .system-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .pulse { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 11px var(--green); animation: pulse 1.8s infinite; }
+    .sys-code { margin-top: 10px; color: #5b8065; direction: ltr; font: 10px/1.7 Consolas, monospace; }
+    @keyframes pulse { 50% { opacity: .45; } }
+    main { min-height: 100vh; margin-right: 254px; }
+    .topbar {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 30px;
+      background: #080d0aeF;
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+    .topbar h1 { flex: 1; margin: 0; font-size: 17px; font-weight: 700; }
+    .crumb { display: block; margin-bottom: 3px; color: #64806d; direction: ltr; text-align: right; font: 10px Consolas, monospace; }
+    .clock { color: var(--green-soft); direction: ltr; font: 12px Consolas, monospace; }
+    .wrap { max-width: 1500px; margin: auto; padding: 27px 30px 60px; }
+    .view { display: none; }
+    .view.active { display: block; animation: arrive .2s ease-out; }
+    @keyframes arrive { from { opacity: .5; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .hero {
+      position: relative;
+      display: flex;
+      min-height: 155px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      overflow: hidden;
+      margin-bottom: 19px;
+      padding: 25px 28px;
+      border: 1px solid #2c583a;
+      border-radius: var(--radius);
+      background: linear-gradient(105deg, #11251a, #0d1711 70%);
+    }
+    .hero::after {
+      position: absolute;
+      top: -70px;
+      left: 5%;
+      width: 245px;
+      height: 245px;
+      border: 1px solid #54f58b22;
+      border-radius: 50%;
+      box-shadow: 0 0 0 22px #54f58b08, 0 0 0 44px #54f58b06;
+      content: "";
+      pointer-events: none;
+    }
+    .planet-scene {
+      position: absolute;
+      z-index: 0;
+      top: 50%;
+      left: 24%;
+      width: 190px;
+      height: 190px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .planet-orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 184px;
+      height: 72px;
+      border: 1px solid #a4ffc466;
+      border-radius: 50%;
+      box-shadow: 0 0 13px #54f58b20, inset 0 0 10px #54f58b10;
+      transform: translate(-50%, -50%) rotate(-24deg);
+    }
+    .planet-orbit.orbit-back {
+      width: 156px;
+      height: 112px;
+      border-color: #8af5c54d;
+      transform: translate(-50%, -50%) rotate(48deg);
+      animation: orbit-drift 18s linear infinite;
+    }
+    .planet {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 91px;
+      height: 91px;
+      overflow: hidden;
+      border: 1px solid #a4ffc477;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 35% 32%, #b3ffd1 0 2%, transparent 3%),
+        radial-gradient(ellipse at 65% 62%, #163f30 0 7%, transparent 8%),
+        radial-gradient(ellipse at 38% 68%, #52a878 0 13%, transparent 14%),
+        radial-gradient(ellipse at 65% 31%, #70d79a 0 17%, transparent 18%),
+        radial-gradient(circle at 32% 27%, #a7ffc2 0, #4cae72 24%, #1c6948 53%, #0a271b 77%);
+      box-shadow: inset -14px -9px 22px #020d0a9c, inset 7px 4px 15px #c8ffdc50, 0 0 22px #54f58b45;
+      transform: translate(-50%, -50%);
+      animation: planet-float 5s ease-in-out infinite;
+    }
+    .planet::before {
+      position: absolute;
+      inset: 7px -10px;
+      border: 1px solid #c8ffdc22;
+      border-radius: 48%;
+      content: "";
+      transform: rotate(-28deg);
+    }
+    .planet::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: repeating-linear-gradient(110deg, transparent 0 14px, #baffd20b 15px 16px, transparent 17px 27px);
+      content: "";
+    }
+    .planet-satellite {
+      position: absolute;
+      top: 41px;
+      left: 17px;
+      width: 9px;
+      height: 9px;
+      border: 1px solid #e0ffe8;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: satellite-path 8s linear infinite;
+    }
+    .planet-star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #c8ffdc;
+      box-shadow: 0 0 8px #54f58b;
+      animation: star-glow 2.4s ease-in-out infinite alternate;
+    }
+    .planet-star.star-one { top: 25px; right: 20px; }
+    .planet-star.star-two { bottom: 27px; left: 23px; animation-delay: .8s; }
+    @keyframes planet-float { 50% { transform: translate(-50%, calc(-50% - 5px)); } }
+    @keyframes orbit-drift { to { transform: translate(-50%, -50%) rotate(408deg); } }
+    @keyframes satellite-path { to { transform: rotate(1turn) translateX(83px) rotate(-1turn); } }
+    @keyframes star-glow { to { opacity: .35; transform: scale(.7); } }
+    .eyebrow { color: var(--green); direction: ltr; text-align: right; font: 11px Consolas, monospace; letter-spacing: 1px; }
+    .hero h2 { margin: 8px 0 5px; font-size: clamp(20px, 3vw, 27px); }
+    .hero p { margin: 0; color: var(--muted); }
+    .hero-actions { z-index: 1; display: flex; flex-wrap: wrap; gap: 9px; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 13px; margin-bottom: 26px; }
+    .stat {
+      min-height: 110px;
+      padding: 16px 17px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(145deg, #111a14, #0c130f);
+    }
+    .stat-top { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .stat-icon { color: var(--green); font: 15px Consolas, monospace; }
+    .stat strong { display: block; margin-top: 9px; color: var(--green-soft); font: 26px Consolas, "Segoe UI", sans-serif; }
+    .section-head { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; }
+    .section-head h2 { flex: 1; margin: 0; font-size: 16px; }
+    .section-head small { color: var(--muted); font-size: 11px; }
+    .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+    .project-card {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 13px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(155deg, #101912, #0c120e);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .project-card:hover { transform: translateY(-2px); border-color: #3d704c; box-shadow: 0 10px 34px #0004; }
+    .project-head { display: flex; align-items: flex-start; gap: 11px; }
+    .project-symbol {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border: 1px solid #54f58b30;
+      border-radius: 11px;
+      color: var(--green);
+      background: #54f58b0d;
+      font: 16px Consolas, monospace;
+    }
+    .project-title { min-width: 0; flex: 1; }
+    .project-title h3 { overflow: hidden; margin: 1px 0 4px; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+    .project-title a { overflow: hidden; display: block; color: #789481; direction: ltr; text-align: right; font: 10px Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .status { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 20px; color: var(--muted); font-size: 10px; }
+    .status::before { width: 6px; height: 6px; border-radius: 50%; background: #738477; content: ""; }
+    .status.online { color: var(--green); border-color: #54f58b38; }
+    .status.online::before { background: var(--green); box-shadow: 0 0 7px var(--green); }
+    .status.offline { color: var(--red); border-color: #ff718038; }
+    .status.offline::before { background: var(--red); }
+    .status.checking { color: var(--amber); }
+    .status.checking::before { background: var(--amber); animation: pulse .8s infinite; }
+    .description { min-height: 41px; margin: 0; color: #9aad9f; font-size: 12px; line-height: 1.8; }
+    .card-meta { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; }
+    .card-meta b { color: var(--text); font-weight: 600; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 3px 8px; border: 1px solid #24382a; border-radius: 20px; color: #96aa9b; background: #111d15; font: 10px Consolas, "Segoe UI", sans-serif; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 11px; border-top: 1px solid #1b2c20; }
+    .btn, .icon-btn {
+      display: inline-flex;
+      min-height: 36px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border: 1px solid #2a4934;
+      border-radius: 9px;
+      color: var(--green-soft);
+      background: #142219;
+      cursor: pointer;
+      transition: .16s ease;
+    }
+    .btn:hover, .icon-btn:hover { border-color: var(--green); background: #1a3021; }
+    .btn.primary { color: #06100a; border-color: var(--green); background: var(--green); font-weight: 800; }
+    .btn.primary:hover { color: #06100a; background: #83ffab; }
+    .btn.subtle { color: var(--text); border-color: var(--line); background: var(--surface-2); }
+    .btn.danger { color: var(--red); border-color: #70333b; background: #241317; }
+    .btn.small { min-height: 32px; padding: 6px 9px; font-size: 11px; }
+    .icon-btn { width: 36px; padding: 0; color: var(--muted); }
+    .icon-btn.favorite { color: var(--amber); border-color: #62502d; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 15px; }
+    .field, input, select, textarea {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--text);
+      background: var(--surface-2);
+    }
+    input::placeholder, textarea::placeholder { color: #6c8272; }
+    .toolbar input { flex: 1; min-width: 220px; }
+    .toolbar select { min-width: 145px; }
+    .panel { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #0e1711; }
+    .task-add { display: flex; gap: 8px; margin-bottom: 14px; }
+    .task-add input { flex: 1; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    .tab {
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+    }
+    .tab.active { color: var(--green-soft); border-color: #54f58b55; background: #54f58b12; }
+    .task-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .task-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #1b2b20; border-radius: 9px; background: #101a13; }
+    .task-item input { width: 17px; height: 17px; accent-color: var(--green); }
+    .task-text { flex: 1; }
+    .task-item.done .task-text { color: var(--muted); text-decoration: line-through; }
+    .task-project { color: #82988a; font-size: 11px; }
+    .task-remove { padding: 3px 7px; border: 0; color: #8c6267; background: transparent; cursor: pointer; }
+    .empty { grid-column: 1/-1; padding: 35px 12px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 12px; }
+    .settings-grid { display: grid; max-width: 780px; gap: 13px; }
+    .setting { padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .setting h3 { margin: 0 0 8px; font-size: 14px; }
+    .setting p { margin: 0 0 13px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .switch-row { display: flex; align-items: center; gap: 10px; }
+    .switch-row input { width: 17px; height: 17px; accent-color: var(--green); }
+    .hint { margin-top: 8px !important; font-size: 11px !important; }
+    .overlay { position: fixed; z-index: 60; inset: 0; display: none; align-items: center; justify-content: center; padding: 16px; background: #020604d9; backdrop-filter: blur(4px); }
+    .overlay.open { display: flex; }
+    .modal { width: min(100%, 590px); max-height: 92vh; overflow: auto; padding: 21px; border: 1px solid #31583b; border-radius: 15px; background: #0e1711; box-shadow: 0 20px 80px #0009; }
+    .modal.large { width: min(100%, 850px); }
+    .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .modal-head h2 { flex: 1; margin: 0; font-size: 16px; }
+    .close-btn { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: var(--surface-2); cursor: pointer; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .form-field { margin-bottom: 12px; }
+    .form-field.full { grid-column: 1/-1; }
+    .form-field label { display: block; margin-bottom: 6px; color: #a0b1a4; font-size: 12px; }
+    .form-field input, .form-field textarea { width: 100%; }
+    .form-field textarea { resize: vertical; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .note-area { width: 100%; min-height: 170px; resize: vertical; line-height: 1.7; }
+    .detail-tabs { margin-bottom: 14px; }
+    .history-row { display: flex; gap: 9px; align-items: center; }
+    .history-mark { color: var(--green); }
+    .history-mark.fail { color: var(--red); }
+    iframe { width: 100%; height: 65vh; border: 1px solid var(--line); border-radius: 9px; background: white; }
+    .toast {
+      position: fixed;
+      z-index: 90;
+      bottom: 20px;
+      left: 20px;
+      max-width: min(90vw, 420px);
+      padding: 11px 15px;
+      border: 1px solid #54f58b66;
+      border-radius: 10px;
+      color: var(--green-soft);
+      background: #102017;
+      box-shadow: 0 8px 30px #0007;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: .2s ease;
+      pointer-events: none;
+    }
+    .toast.visible { opacity: 1; transform: none; }
+    .scrim { position: fixed; z-index: 25; inset: 0; display: none; background: #0009; }
+    @media (max-width: 960px) {
+      .sidebar { transform: translateX(100%); }
+      .sidebar.open { transform: translateX(0); }
+      .scrim.open { display: block; }
+      main { margin-right: 0; }
+      .topbar, .wrap { padding-right: 18px; padding-left: 18px; }
+      .menu-toggle { display: inline-flex !important; }
+    }
+    @media (max-width: 760px) {
+      .planet-scene { left: 22px; top: 28px; width: 112px; height: 112px; transform: none; opacity: .72; }
+      .planet-orbit { width: 108px; height: 43px; }
+      .planet-orbit.orbit-back { width: 92px; height: 66px; }
+      .planet { width: 55px; height: 55px; }
+      .planet-satellite { top: 25px; left: 6px; width: 7px; height: 7px; }
+      .planet-star.star-one { top: 8px; right: 7px; }
+      .planet-star.star-two { bottom: 10px; left: 8px; }
+    }
+    @media (max-width: 650px) {
+      .topbar { min-height: 62px; gap: 8px; }
+      .topbar h1 { font-size: 15px; }
+      .clock { display: none; }
+      .topbar .btn { padding: 8px 9px; font-size: 11px; }
+      .wrap { padding-top: 18px; }
+      .hero { align-items: flex-start; flex-direction: column; padding: 20px; }
+      .hero::after { left: -80px; }
+      .planet-scene { left: 9px; top: 8px; opacity: .5; }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+      .stat { min-height: 98px; padding: 13px; }
+      .stat strong { font-size: 23px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-field.full { grid-column: auto; }
+      .task-add { flex-wrap: wrap; }
+      .task-add select { width: 100%; }
+      .task-project { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">&gt;_</div>
+        <div><strong>مرصد المشاريع</strong><small>PROJECT CONTROL / 01</small></div>
+      </div>
+      <div class="nav-label">NAVIGATION</div>
+      <nav class="nav" aria-label="القائمة الرئيسية">
+        <button class="active" data-view="home"><span class="nav-icon">01</span> نظرة عامة</button>
+        <button data-view="projects"><span class="nav-icon">02</span> المشاريع</button>
+        <button data-view="tasks"><span class="nav-icon">03</span> المهام</button>
+        <button data-view="settings"><span class="nav-icon">04</span> الإعدادات والبيانات</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="system-box">
+          <div class="system-line"><span class="pulse"></span> النظام المحلي جاهز</div>
+          <div class="sys-code">LOCAL STORAGE: ACTIVE<br>ENCRYPTION: NOT CONFIGURED</div>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+    <main>
+      <header class="topbar">
+        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="فتح القائمة" style="display:none">☰</button>
+        <h1><span class="crumb">~/dashboard/</span><span id="pageTitle">نظرة عامة</span></h1>
+        <time class="clock" id="clock" aria-label="الوقت الحالي"></time>
+        <button class="btn subtle" id="checkAll" title="فحص روابط المواقع">↻ <span>فحص الكل</span></button>
+        <button class="btn primary" id="addProject">＋ <span>مشروع جديد</span></button>
+      </header>
+      <div class="wrap">
+        <section class="view active" id="view-home">
+          <div class="hero">
+            <div class="planet-scene" aria-hidden="true">
+              <div class="planet-orbit"></div>
+              <div class="planet-orbit orbit-back"></div>
+              <div class="planet"></div>
+              <div class="planet-satellite"></div>
+              <span class="planet-star star-one"></span>
+              <span class="planet-star star-two"></span>
+            </div>
+            <div>
+              <div class="eyebrow">SYSTEM OVERVIEW // CONTROL ROOM</div>
+              <h2>أهلًا بك في مركز التحكم</h2>
+              <p>تابع مشاريعك، راقب الروابط، ونظّم مهامك من مكان واحد.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="btn primary" data-navigate="projects">⌕ <span>استعراض المشاريع</span></button>
+              <button class="btn subtle" data-navigate="tasks">☷ <span>إدارة المهام</span></button>
+            </div>
+          </div>
+          <div class="stats" id="stats"></div>
+          <div class="section-head"><h2>المشاريع المثبّتة</h2><small>LIVE PROJECTS / <span id="projectCount">0</span></small></div>
+          <div class="project-grid" id="homeProjects"></div>
+          <div class="section-head"><h2>كل المشاريع</h2><button class="btn subtle small" data-navigate="projects">عرض الكل ←</button></div>
+          <div class="project-grid" id="recentProjects"></div>
+        </section>
+        <section class="view" id="view-projects">
+          <div class="section-head"><h2>إدارة المشاريع</h2><small>PROJECT REGISTRY</small></div>
+          <div class="toolbar">
+            <input id="search" type="search" placeholder="ابحث بالاسم أو الرابط أو التقنية..." aria-label="البحث عن مشروع">
+            <select id="typeFilter" aria-label="تصفية حسب النوع"><option value="all">كل الأنواع</option></select>
+            <select id="statusFilter" aria-label="تصفية حسب الحالة">
+              <option value="all">كل الحالات</option><option value="online">متاح</option><option value="offline">تعذر الاتصال</option><option value="unknown">لم يُفحص</option>
+            </select>
+          </div>
+          <div class="project-grid" id="allProjects"></div>
+        </section>
+        <section class="view" id="view-tasks">
+          <div class="section-head"><h2>قائمة المهام</h2><small>TASK QUEUE</small></div>
+          <div class="panel">
+            <div class="task-add">
+              <select id="taskProject" aria-label="المشروع"></select>
+              <input id="taskText" placeholder="اكتب مهمة جديدة..." aria-label="مهمة جديدة">
+              <button class="btn primary" id="addTask">＋ إضافة</button>
+            </div>
+            <div class="tabs" id="taskTabs">
+              <button class="tab active" data-filter="open">المفتوحة</button>
+              <button class="tab" data-filter="done">المنجزة</button>
+              <button class="tab" data-filter="all">الكل</button>
+            </div>
+            <ul class="task-list" id="taskList"></ul>
+          </div>
+        </section>
+        <section class="view" id="view-settings">
+          <div class="section-head"><h2>الإعدادات والبيانات</h2><small>LOCAL CONFIGURATION</small></div>
+          <div class="settings-grid">
+            <div class="setting">
+              <h3>الفحص التلقائي للروابط</h3>
+              <label class="switch-row"><input type="checkbox" id="autoCheck"> فحص الروابط كل دقيقة أثناء فتح اللوحة</label>
+              <p class="hint">الفحص يختبر إمكانية إرسال طلب من متصفحك فقط. بسبب قيود المواقع الخارجية قد لا يمكن معرفة رمز HTTP أو حالة النشر بدقة.</p>
+            </div>
+            <div class="setting">
+              <h3>النسخ الاحتياطي</h3>
+              <p>صدّر المشاريع والمهام والملاحظات إلى ملف JSON أو استورد نسخة سابقة.</p>
+              <div class="hero-actions">
+                <button class="btn primary" id="exportData">↓ تصدير JSON</button>
+                <label class="btn subtle" for="importData" style="cursor:pointer">↑ استيراد نسخة</label>
+                <input id="importData" type="file" accept=".json,application/json" hidden>
+              </div>
+            </div>
+            <div class="setting">
+              <h3>مساحة التخزين</h3>
+              <p>تُحفظ بيانات اللوحة على هذا المتصفح والجهاز فقط. لا تضع كلمات مرور أو أسرارًا في الملاحظات.</p>
+              <button class="btn danger" id="resetData">إعادة البيانات الافتراضية</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="overlay" id="editOverlay" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="modal">
+      <div class="modal-head"><h2 id="editTitle">مشروع جديد</h2><button class="close-btn" data-close aria-label="إغلاق">×</button></div>
+      <form id="projectForm">
+        <div class="form-grid">
+          <div class="form-field full"><label for="projectName">اسم المشروع *</label><input id="projectName" required maxlength="100"></div>
+          <div class="form-field full"><label for="projectUrl">رابط الموقع *</label><input id="projectUrl" type="url" placeholder="https://example.com" dir="ltr" required></div>
+          <div class="form-field full"><label for="projectDescription">الوصف</label><textarea id="projectDescription" rows="2" maxlength="500"></textarea></div>
+          <div class="form-field"><label for="projectType">نوع المشروع</label><input id="projectType" list="projectTypes" placeholder="موقع تعريفي"><datalist id="projectTypes"></datalist></div>
+          <div class="form-field"><label for="projectColor">لون البطاقة</label><input id="projectColor" type="color" value="#54f58b" style="height:41px;padding:4px"></div>
+          <div class="form-field"><label for="projectRepo">رابط GitHub</label><input id="projectRepo" type="url" dir="ltr"></div>
+          <div class="form-field"><label for="projectHost">رابط الاستضافة</label><input id="projectHost" type="url" dir="ltr"></div>
+          <div class="form-field full"><label for="projectTags">التقنيات (افصل بينها بفاصلة)</label><input id="projectTags" placeholder="HTML, CSS, JavaScript"></div>
+        </div>
+        <div class="modal-actions"><button class="btn primary" type="submit">حفظ المشروع</button><button class="btn subtle" type="button" data-close>إلغاء</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="modal">
+      <div class="modal-head"><h2 id="detailTitle"></h2><button class="close-btn" data-close aria-label="إغلاق">×</button></div>
+      <div class="tabs detail-tabs" id="detailTabs">
+        <button class="tab active" data-detail="tasks">المهام</button>
+        <button class="tab" data-detail="notes">ملاحظات</button>
+        <button class="tab" data-detail="history">سجل الفحص</button>
+      </div>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="previewOverlay" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="modal large">
+      <div class="modal-head"><h2 id="previewTitle"></h2><a class="btn subtle small" id="previewOpen" target="_blank" rel="noopener">فتح الموقع ↗</a><button class="close-btn" data-close aria-label="إغلاق">×</button></div>
+      <iframe id="previewFrame" title="معاينة الموقع"></iframe>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+      const STORAGE_KEY = "project-observatory-v1";
+      const $ = (id) => document.getElementById(id);
+      const seed = () => ({
+        autoCheck: false,
+        projects: [
+          { id: 1, name: "أدهم لإنشاء المواقع", url: "https://technological-adham.vercel.app/", description: "موقع تعريفي لخدمات تصميم وبرمجة المواقع، ويضم صفحة أعمال.", type: "موقع تعريفي", color: "#6C7CFF", repo: "", host: "", tags: ["HTML", "CSS", "JS", "Vercel"], favorite: true, notes: "", tasks: [], history: [] },
+          { id: 2, name: "موقع مدرسة السادات الثانوية بنين", url: "https://el-sadat-school.vercel.app/", description: "الموقع الرسمي لمدرسة السادات الثانوية بنين.", type: "مدرسة", color: "#3DDBB0", repo: "", host: "", tags: ["HTML", "CSS", "JS", "Vercel"], favorite: true, notes: "", tasks: [], history: [] },
+          { id: 3, name: "بوابة إدارة السنبلاوين التعليمية", url: "https://al-edara-esnblawen.vercel.app/", description: "البوابة الرسمية ودليل المدارس والخدمات الإلكترونية.", type: "بوابة تعليمية", color: "#FFC857", repo: "", host: "", tags: ["HTML", "CSS", "JS", "Vercel"], favorite: false, notes: "", tasks: [], history: [] }
+        ]
+      });
+      const normalize = (data) => {
+        if (!data || !Array.isArray(data.projects)) throw new Error("صيغة بيانات المشاريع غير صالحة");
+        return {
+          autoCheck: Boolean(data.autoCheck ?? data.auto),
+          projects: data.projects.map((p, index) => ({
+            id: Number.isFinite(Number(p.id)) ? Number(p.id) : Date.now() + index,
+            name: String(p.name || "مشروع بدون اسم"),
+            url: String(p.url || ""),
+            description: String(p.description || p.desc || ""),
+            type: String(p.type || ""),
+            color: /^#[0-9a-f]{6}$/i.test(p.color) ? p.color : "#54f58b",
+            repo: String(p.repo || ""),
+            host: String(p.host || ""),
+            tags: Array.isArray(p.tags) ? p.tags.map(String) : [],
+            favorite: Boolean(p.favorite ?? p.pin),
+            notes: String(p.notes || ""),
+            tasks: Array.isArray(p.tasks) ? p.tasks.map((t, i) => ({ id: Number(t.id) || Date.now() + i, text: String(t.text || ""), done: Boolean(t.done) })) : [],
+            history: Array.isArray(p.history || p.hist) ? (p.history || p.hist).map(h => ({ time: Number(h.time || h.t) || Date.now(), ok: Boolean(h.ok), ms: Number(h.ms) || 0 })) : []
+          }))
+        };
+      };
+      let state;
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        state = stored ? normalize(JSON.parse(stored)) : seed();
+      } catch (error) {
+        console.error("تعذر تحميل بيانات اللوحة:", error);
+        state = seed();
+      }
+      const checks = new Map();
+      let editingId = null;
+      let detailId = null;
+      let detailTab = "tasks";
+      let taskFilter = "open";
+      let autoTimer = null;
+      let toastTimer = null;
+      let searchTerm = "";
+      let typeFilter = "all";
+      let statusFilter = "all";
+
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+      const getProject = id => state.projects.find(project => project.id === Number(id));
+      const displayHost = url => { try { return new URL(url).host; } catch { return url; } };
+      const save = () => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          return true;
+        } catch (error) {
+          console.error("تعذر حفظ بيانات اللوحة:", error);
+          notify("تعذر الحفظ. قد تكون مساحة التخزين ممتلئة أو معطّلة.");
+          return false;
+        }
+      };
+      function notify(message) {
+        const toast = $("toast");
+        toast.textContent = message;
+        toast.classList.add("visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("visible"), 2600);
+      }
+      const openOverlay = id => $(id).classList.add("open");
+      function closeOverlay(overlay) {
+        overlay.classList.remove("open");
+        if (overlay.id === "previewOverlay") $("previewFrame").src = "about:blank";
+      }
+      document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => closeOverlay(button.closest(".overlay"))));
+      document.querySelectorAll(".overlay").forEach(overlay => {
+        overlay.addEventListener("click", event => { if (event.target === overlay) closeOverlay(overlay); });
+      });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") document.querySelectorAll(".overlay.open").forEach(closeOverlay);
+      });
+
+      const viewNames = { home: "نظرة عامة", projects: "المشاريع", tasks: "المهام", settings: "الإعدادات والبيانات" };
+      function navigate(view) {
+        if (!viewNames[view]) return;
+        document.querySelectorAll(".view").forEach(section => section.classList.toggle("active", section.id === `view-${view}`));
+        document.querySelectorAll(".nav button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+        $("pageTitle").textContent = viewNames[view];
+        closeSidebar();
+      }
+      document.querySelectorAll(".nav button").forEach(button => button.addEventListener("click", () => navigate(button.dataset.view)));
+      document.querySelectorAll("[data-navigate]").forEach(button => button.addEventListener("click", () => navigate(button.dataset.navigate)));
+      const closeSidebar = () => { $("sidebar").classList.remove("open"); $("scrim").classList.remove("open"); };
+      $("menuToggle").addEventListener("click", () => { $("sidebar").classList.add("open"); $("scrim").classList.add("open"); });
+      $("scrim").addEventListener("click", closeSidebar);
+
+      function projectCard(project) {
+        const check = checks.get(project.id) || {};
+        const status = check.status || "unknown";
+        const statusLabel = { online: "استجاب", offline: "تعذر الاتصال", checking: "جارٍ الفحص", unknown: "لم يُفحص" }[status];
+        const openTasks = project.tasks.filter(task => !task.done).length;
+        const validUrl = /^https?:\/\//i.test(project.url);
+        return `<article class="project-card">
+          <div class="project-head">
+            <div class="project-symbol" style="color:${escapeHtml(project.color)}">&lt;/&gt;</div>
+            <div class="project-title"><h3>${escapeHtml(project.name)}</h3>
+              ${validUrl ? `<a href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(displayHost(project.url))}</a>` : `<span class="project-title">${escapeHtml(project.url)}</span>`}
+            </div>
+            <span class="status ${status}">${statusLabel}</span>
+          </div>
+          <p class="description">${escapeHtml(project.description || "لا يوجد وصف للمشروع.")}</p>
+          <div class="card-meta"><span>زمن الفحص: <b>${check.ms ? `${check.ms} ms` : "—"}</b></span><span>مهام مفتوحة: <b>${openTasks}</b></span></div>
+          <div class="tags">${project.type ? `<span class="tag">${escapeHtml(project.type)}</span>` : ""}${project.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+          <div class="card-actions">
+            ${validUrl ? `<a class="btn primary small" href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer">↗ فتح الموقع</a>` : ""}
+            <button class="icon-btn" data-action="check" data-id="${project.id}" title="فحص الرابط" aria-label="فحص الرابط">↻</button>
+            <button class="icon-btn" data-action="preview" data-id="${project.id}" title="معاينة" aria-label="معاينة">◉</button>
+            <button class="icon-btn" data-action="details" data-id="${project.id}" title="التفاصيل" aria-label="التفاصيل">☷</button>
+            <button class="icon-btn ${project.favorite ? "favorite" : ""}" data-action="favorite" data-id="${project.id}" title="تثبيت" aria-label="تثبيت المشروع">★</button>
+            <button class="icon-btn" data-action="edit" data-id="${project.id}" title="تعديل" aria-label="تعديل المشروع">✎</button>
+            <button class="icon-btn" data-action="delete" data-id="${project.id}" title="حذف" aria-label="حذف المشروع">×</button>
+          </div>
+        </article>`;
+      }
+      function filteredProjects() {
+        return state.projects.filter(project => {
+          const check = checks.get(project.id) || {};
+          const status = check.status || "unknown";
+          const queryMatch = !searchTerm || [project.name, project.url, project.description, project.type, project.tags.join(" ")].join(" ").toLocaleLowerCase().includes(searchTerm);
+          return queryMatch && (typeFilter === "all" || project.type === typeFilter) && (statusFilter === "all" || status === statusFilter);
+        });
+      }
+      function render() {
+        const statusList = state.projects.map(project => checks.get(project.id) || {});
+        const tested = statusList.filter(check => check.status === "online").length;
+        const responseTimes = statusList.map(check => check.ms).filter(Number.isFinite).filter(ms => ms > 0);
+        const average = responseTimes.length ? Math.round(responseTimes.reduce((sum, ms) => sum + ms, 0) / responseTimes.length) : 0;
+        const tasks = state.projects.flatMap(project => project.tasks);
+        const stats = [
+          ["//", "إجمالي المشاريع", state.projects.length],
+          ["OK", "روابط استجابت", statusList.some(check => check.status) ? `${tested} / ${state.projects.length}` : "—"],
+          ["ms", "متوسط زمن الفحص", average ? `${average} ms` : "—"],
+          ["[]", "مهام مفتوحة", tasks.filter(task => !task.done).length]
+        ];
+        $("stats").innerHTML = stats.map(([icon, label, value]) => `<div class="stat"><div class="stat-top"><span class="stat-icon">${icon}</span>${label}</div><strong>${value}</strong></div>`).join("");
+        const sorted = [...state.projects].sort((a, b) => Number(b.favorite) - Number(a.favorite));
+        const favorites = sorted.filter(project => project.favorite);
+        $("projectCount").textContent = favorites.length;
+        $("homeProjects").innerHTML = favorites.length ? favorites.map(projectCard).join("") : `<div class="empty">لا توجد مشاريع مثبّتة. استخدم ★ لتثبيت مشروع.</div>`;
+        $("recentProjects").innerHTML = sorted.length ? sorted.map(projectCard).join("") : `<div class="empty">لا توجد مشاريع بعد. أضف مشروعك الأول.</div>`;
+        const types = [...new Set(state.projects.map(project => project.type).filter(Boolean))];
+        $("typeFilter").innerHTML = `<option value="all">كل الأنواع</option>${types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join("")}`;
+        $("typeFilter").value = types.includes(typeFilter) ? typeFilter : "all";
+        $("allProjects").innerHTML = filteredProjects().map(projectCard).join("") || `<div class="empty">لا توجد نتائج مطابقة.</div>`;
+        $("projectTypes").innerHTML = types.map(type => `<option value="${escapeHtml(type)}">`).join("");
+        const selectedProject = $("taskProject").value;
+        $("taskProject").innerHTML = state.projects.map(project => `<option value="${project.id}">${escapeHtml(project.name)}</option>`).join("");
+        if (state.projects.some(project => String(project.id) === selectedProject)) $("taskProject").value = selectedProject;
+        $("autoCheck").checked = state.autoCheck;
+        renderTasks();
+        if ($("detailOverlay").classList.contains("open")) renderDetails();
+      }
+
+      async function checkProject(project) {
+        if (!project || !/^https?:\/\//i.test(project.url)) {
+          notify("أضف رابطًا صحيحًا للمشروع قبل الفحص.");
+          return;
+        }
+        checks.set(project.id, { status: "checking" });
+        render();
+        const start = performance.now();
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 9000);
+        let ok = false;
+        try {
+          await fetch(project.url, { mode: "no-cors", cache: "no-store", signal: controller.signal });
+          ok = true;
+        } catch (error) {
+          if (error.name !== "AbortError") console.warn(`تعذر الاتصال بـ ${project.url}:`, error);
+        } finally {
+          clearTimeout(timeout);
+        }
+        const result = { status: ok ? "online" : "offline", ms: Math.round(performance.now() - start), time: Date.now() };
+        checks.set(project.id, result);
+        project.history.unshift({ time: result.time, ok, ms: result.ms });
+        project.history = project.history.slice(0, 40);
+        save();
+        render();
+      }
+      async function checkAll() {
+        if (!state.projects.length) { notify("لا توجد مشاريع لفحصها."); return; }
+        await Promise.all(state.projects.map(checkProject));
+        notify("انتهى فحص روابط المشاريع.");
+      }
+      $("checkAll").addEventListener("click", checkAll);
+      function updateAutoCheck() {
+        clearInterval(autoTimer);
+        $("autoCheck").checked = state.autoCheck;
+        if (state.autoCheck) autoTimer = setInterval(checkAll, 60000);
+      }
+      $("autoCheck").addEventListener("change", event => {
+        state.autoCheck = event.target.checked;
+        save();
+        updateAutoCheck();
+      });
+
+      $("search").addEventListener("input", event => { searchTerm = event.target.value.trim().toLocaleLowerCase(); render(); });
+      $("typeFilter").addEventListener("change", event => { typeFilter = event.target.value; render(); });
+      $("statusFilter").addEventListener("change", event => { statusFilter = event.target.value; render(); });
+
+      function addTask(projectId, text) {
+        const project = getProject(projectId);
+        const value = text.trim();
+        if (!project || !value) return false;
+        project.tasks.push({ id: Date.now(), text: value, done: false });
+        save();
+        render();
+        return true;
+      }
+      function renderTasks() {
+        const all = state.projects.flatMap(project => project.tasks.map(task => ({ ...task, projectId: project.id, projectName: project.name })));
+        const filtered = all.filter(task => taskFilter === "all" || (taskFilter === "done") === task.done);
+        $("taskList").innerHTML = filtered.length ? filtered.map(task => `<li class="task-item ${task.done ? "done" : ""}">
+          <input type="checkbox" data-action="toggle-task" data-project="${task.projectId}" data-id="${task.id}" ${task.done ? "checked" : ""} aria-label="تغيير حالة المهمة">
+          <span class="task-text">${escapeHtml(task.text)}</span><small class="task-project">${escapeHtml(task.projectName)}</small>
+          <button class="task-remove" data-action="remove-task" data-project="${task.projectId}" data-id="${task.id}" aria-label="حذف المهمة">×</button>
+        </li>`).join("") : `<li class="empty">لا توجد مهام في هذا القسم.</li>`;
+      }
+      $("taskTabs").addEventListener("click", event => {
+        const button = event.target.closest("[data-filter]");
+        if (!button) return;
+        taskFilter = button.dataset.filter;
+        $("taskTabs").querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab === button));
+        renderTasks();
+      });
+      $("addTask").addEventListener("click", () => {
+        if (addTask($("taskProject").value, $("taskText").value)) $("taskText").value = "";
+      });
+      $("taskText").addEventListener("keydown", event => { if (event.key === "Enter") $("addTask").click(); });
+
+      function showDetails(id) {
+        detailId = Number(id);
+        detailTab = "tasks";
+        $("detailTabs").querySelectorAll(".tab").forEach((tab, index) => tab.classList.toggle("active", index === 0));
+        renderDetails();
+        openOverlay("detailOverlay");
+      }
+      function renderDetails() {
+        const project = getProject(detailId);
+        if (!project) { closeOverlay($("detailOverlay")); return; }
+        $("detailTitle").textContent = project.name;
+        const body = $("detailBody");
+        if (detailTab === "tasks") {
+          body.innerHTML = `<div class="task-add"><input id="detailTaskText" placeholder="مهمة جديدة لهذا المشروع..." aria-label="مهمة المشروع"><button class="btn primary" id="detailAddTask">＋</button></div>
+            <ul class="task-list">${project.tasks.map(task => `<li class="task-item ${task.done ? "done" : ""}">
+              <input type="checkbox" data-action="toggle-task" data-project="${project.id}" data-id="${task.id}" ${task.done ? "checked" : ""} aria-label="تغيير حالة المهمة">
+              <span class="task-text">${escapeHtml(task.text)}</span><button class="task-remove" data-action="remove-task" data-project="${project.id}" data-id="${task.id}" aria-label="حذف المهمة">×</button>
+            </li>`).join("") || `<li class="empty">لا توجد مهام لهذا المشروع.</li>`}</ul>`;
+          $("detailAddTask").addEventListener("click", () => {
+            if (addTask(project.id, $("detailTaskText").value)) $("detailTaskText").value = "";
+          });
+          $("detailTaskText").addEventListener("keydown", event => { if (event.key === "Enter") $("detailAddTask").click(); });
+        } else if (detailTab === "notes") {
+          body.innerHTML = `<textarea class="note-area" id="projectNotes" placeholder="أفكار وملاحظات للمشروع...">${escapeHtml(project.notes)}</textarea><p class="hint" style="color:var(--muted)">تُحفظ الملاحظات تلقائيًا في هذا المتصفح فقط. لا تخزّن كلمات مرور أو مفاتيح سرية هنا.</p>`;
+          $("projectNotes").addEventListener("input", event => { project.notes = event.target.value; save(); });
+        } else {
+          body.innerHTML = `<ul class="task-list">${project.history.map(item => `<li class="task-item"><span class="history-mark ${item.ok ? "" : "fail"}">${item.ok ? "●" : "●"}</span><span class="task-text">${item.ok ? "استجاب طلب الاتصال" : "تعذر إرسال طلب الاتصال"}</span><small class="task-project">${item.ok ? `${item.ms} ms · ` : ""}${new Date(item.time).toLocaleString("ar-EG")}</small></li>`).join("") || `<li class="empty">لا يوجد سجل فحص حتى الآن.</li>`}</ul>`;
+        }
+      }
+      $("detailTabs").addEventListener("click", event => {
+        const button = event.target.closest("[data-detail]");
+        if (!button) return;
+        detailTab = button.dataset.detail;
+        $("detailTabs").querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab === button));
+        renderDetails();
+      });
+
+      function openProjectForm(project = null) {
+        editingId = project ? project.id : null;
+        $("projectForm").reset();
+        $("editTitle").textContent = project ? "تعديل المشروع" : "إضافة مشروع";
+        $("projectName").value = project?.name || "";
+        $("projectUrl").value = project?.url || "";
+        $("projectDescription").value = project?.description || "";
+        $("projectType").value = project?.type || "";
+        $("projectColor").value = project?.color || "#54f58b";
+        $("projectRepo").value = project?.repo || "";
+        $("projectHost").value = project?.host || "";
+        $("projectTags").value = project?.tags.join(", ") || "";
+        openOverlay("editOverlay");
+        $("projectName").focus();
+      }
+      $("addProject").addEventListener("click", () => openProjectForm());
+      $("projectForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const name = $("projectName").value.trim();
+        let url;
+        try {
+          url = new URL($("projectUrl").value.trim());
+          if (!["http:", "https:"].includes(url.protocol)) throw new Error("protocol");
+        } catch {
+          notify("أدخل رابطًا صحيحًا يبدأ بـ https:// أو http://");
+          return;
+        }
+        const values = {
+          name, url: url.href, description: $("projectDescription").value.trim(),
+          type: $("projectType").value.trim(), color: $("projectColor").value,
+          repo: $("projectRepo").value.trim(), host: $("projectHost").value.trim(),
+          tags: $("projectTags").value.split(/[,،]/).map(tag => tag.trim()).filter(Boolean)
+        };
+        if (editingId !== null) Object.assign(getProject(editingId), values);
+        else state.projects.push({ id: Date.now(), favorite: false, notes: "", tasks: [], history: [], ...values });
+        save();
+        render();
+        closeOverlay($("editOverlay"));
+        notify(editingId !== null ? "تم تحديث المشروع." : "تمت إضافة المشروع.");
+      });
+
+      document.addEventListener("click", event => {
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+        const id = Number(button.dataset.id);
+        const project = getProject(id);
+        switch (button.dataset.action) {
+          case "check": checkProject(project); break;
+          case "preview":
+            if (project) {
+              $("previewTitle").textContent = project.name;
+              $("previewOpen").href = project.url;
+              $("previewFrame").src = project.url;
+              openOverlay("previewOverlay");
+            }
+            break;
+          case "details": if (project) showDetails(id); break;
+          case "edit": if (project) openProjectForm(project); break;
+          case "favorite":
+            if (project) { project.favorite = !project.favorite; save(); render(); }
+            break;
+          case "delete":
+            if (project && window.confirm(`حذف «${project.name}» من لوحة التحكم؟ لن يتأثر الموقع نفسه.`)) {
+              state.projects = state.projects.filter(item => item.id !== id);
+              checks.delete(id);
+              save();
+              render();
+              notify("تم حذف المشروع من اللوحة.");
+            }
+            break;
+          case "toggle-task": {
+            const owner = getProject(button.dataset.project);
+            const task = owner?.tasks.find(item => item.id === Number(button.dataset.id));
+            if (task) { task.done = button.checked; save(); render(); }
+            break;
+          }
+          case "remove-task": {
+            const owner = getProject(button.dataset.project);
+            if (owner) { owner.tasks = owner.tasks.filter(item => item.id !== Number(button.dataset.id)); save(); render(); }
+            break;
+          }
+        }
+      });
+
+      $("exportData").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        const link = document.createElement("a");
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = "project-observatory-backup.json";
+        link.click();
+        URL.revokeObjectURL(objectUrl);
+      });
+      $("importData").addEventListener("change", event => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            state = normalize(JSON.parse(String(reader.result)));
+            checks.clear();
+            save();
+            render();
+            updateAutoCheck();
+            notify("تم استيراد النسخة الاحتياطية.");
+          } catch (error) {
+            console.error("تعذر استيراد النسخة الاحتياطية:", error);
+            notify("الملف غير صالح أو لا يحتوي بيانات مشاريع.");
+          }
+          event.target.value = "";
+        };
+        reader.onerror = () => {
+          notify("تعذر قراءة الملف المحدد.");
+          event.target.value = "";
+        };
+        reader.readAsText(file);
+      });
+      $("resetData").addEventListener("click", () => {
+        if (!window.confirm("ستُستبدل بيانات اللوحة الحالية بالمشاريع الافتراضية. هل تريد المتابعة؟")) return;
+        state = seed();
+        checks.clear();
+        save();
+        render();
+        updateAutoCheck();
+        notify("تمت استعادة البيانات الافتراضية.");
+      });
+
+      const updateClock = () => { $("clock").textContent = new Date().toLocaleString("ar-EG", { dateStyle: "medium", timeStyle: "short" }); };
+      updateClock();
+      setInterval(updateClock, 30000);
+      render();
+      updateAutoCheck();
+    })();
+  </script>
+</body>
+</html>
