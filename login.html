@@ -26,7 +26,7 @@ button:hover{background:#6dffa5}button:disabled{opacity:.5;cursor:wait}
   <h1>ADHAM GLOBAL CONTROL</h1>
   <div class="s" id="boot"></div>
   <label for="p">&gt; ENTER ACCESS KEY</label>
-  <input id="p" type="password" autocomplete="current-password" autofocus required>
+  <input id="p" type="password"  >
   <button id="b">AUTHENTICATE</button>
   <div id="e" role="alert"></div>
 </form>
@@ -41,5 +41,6 @@ document.getElementById('f').onsubmit=async e=>{e.preventDefault();const b=docum
  catch{er.textContent='! SERVER UNREACHABLE'}b.disabled=false};
  
 </script>
+
 </body>
 </html>
